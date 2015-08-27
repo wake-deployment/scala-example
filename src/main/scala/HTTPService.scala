@@ -9,7 +9,7 @@ object HTTPService {
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
-  def route(req: HttpRequest): HttpResponse = {
+  def route(req: HttpRequest): HttpResponse = req match {
     case HttpRequest(GET, Uri.Path("/"), _, _, _) => {
       println(req.toString)
       HttpResponse(entity = "Hello world!")
@@ -25,7 +25,7 @@ object HTTPService {
       HttpResponse(404, entity = "Unknown resource!")
   }
 
-  def run(cb: HttpRequest => HttpResponse) = {
+  def run = {
     Http().bindAndHandleSync(route, "localhost", 8080)
   }
 }

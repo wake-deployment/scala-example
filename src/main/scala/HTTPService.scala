@@ -14,7 +14,7 @@ object HTTPService {
   val config = ConfigFactory.load
 
   def route(req: HttpRequest): Future[HttpResponse] = req match {
-    case HttpRequest(GET, Uri.Path("/"), _, _, _) => Future { hello(req) }
+    case HttpRequest(GET, Uri.Path("/"), _, _, _) =>  hello(req)
     case HttpRequest(GET, Uri.Path("/echo"), _, _, _) => Future { echo(req) }
     case _: HttpRequest => Future { HttpResponse(404, entity = "Not found!") }
   }
@@ -27,8 +27,10 @@ object HTTPService {
     )
   }
 
-  def hello(req: HttpRequest): HttpResponse = {
-    HttpResponse(entity = "Hello world!")
+  def hello(req: HttpRequest): Future[HttpResponse] = {
+    Future {
+      HttpResponse(entity = "Hello world!")
+    }
   }
 
   def echo(req: HttpRequest): HttpResponse = {

@@ -3,6 +3,7 @@ import akka.stream.ActorMaterializer
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
+import com.typesafe.config.ConfigFactory
 
 object HTTPService {
   implicit val system = ActorSystem()
@@ -13,6 +14,7 @@ object HTTPService {
       println(req.toString)
       HttpResponse(entity = "Hello world!")
     }
+  val config = ConfigFactory.load
 
     case HttpRequest(GET, Uri.Path("/ping"), _, _, _) =>
       HttpResponse(entity = "PONG!")
@@ -24,8 +26,8 @@ object HTTPService {
       HttpResponse(404, entity = "Unknown resource!")
   }
 
-  def run = {
-    Http().bindAndHandleSync(route, "localhost", 8080)
+  def echo(req: HttpRequest): HttpResponse = {
+    HttpResponse(entity = req.toString)
   }
 }
 

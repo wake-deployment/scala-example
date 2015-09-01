@@ -1,4 +1,5 @@
 import akka.actor.ActorSystem
+import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
@@ -16,6 +17,7 @@ object HTTPService {
   def route(req: HttpRequest): Future[HttpResponse] = req match {
     case HttpRequest(GET, Uri.Path("/"), _, _, _) =>  hello(req)
     case HttpRequest(GET, Uri.Path("/echo"), _, _, _) => Future { echo(req) }
+    case HttpRequest(POST, _, _, _, _) => postecho(req)
     case _: HttpRequest => Future { HttpResponse(404, entity = "Not found!") }
   }
 
@@ -35,6 +37,13 @@ object HTTPService {
 
   def echo(req: HttpRequest): HttpResponse = {
     HttpResponse(entity = req.toString)
+  }
+
+  // `curl --data "oh hai there, again" http://localhost:9000 `
+  def postecho(req: HttpRequest): Future[HttpResponse] = {
+      Unmarshal(req.entity).to[String].map { body =>
+        HttpResponse(200, entity = body)
+      }
   }
 }
 

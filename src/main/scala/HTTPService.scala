@@ -39,12 +39,12 @@ object HTTPService {
   def echo(req: HttpRequest): HttpResponse = {
     HttpResponse(entity = req.toString)
   }
-
-  // `curl --data "oh hai there, again" http://localhost:9000 `
+  
   def postecho(req: HttpRequest): Future[HttpResponse] = {
-      Unmarshal(req.entity).to[String].map { body =>
-        HttpResponse(200, entity = body)
-      }
+    val input: Future[String] =  Unmarshal(req.entity).to[String]
+    input.map { body =>
+      HttpResponse(200, entity = body)
+    }
   }
 }
 
